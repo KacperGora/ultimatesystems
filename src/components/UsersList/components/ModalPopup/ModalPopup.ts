@@ -1,5 +1,8 @@
 import styled from "styled-components";
-
+type Props = {
+  tel?: boolean;
+  checkbox?: boolean;
+};
 export const ModalContainer = styled.div`
   background-color: white;
 
@@ -75,4 +78,49 @@ export const CloseButton = styled.div`
 export const DesktopCloseButton = styled(CloseButton)`
   top: -${CLOSE_BUTTON_SIZE / 2}px;
   left: calc(100% - ${CLOSE_BUTTON_SIZE / 2}px);
+`;
+////MODAL FORM ////
+
+export const StyledModalForm = styled.form``;
+
+// export const StyledFormGridContainer = styled.div`
+//   display: grid;
+//   grid-template-columns: repeat(3, 1fr);
+
+//   gap: 50px;
+// `;
+
+export const StyledForm = styled.form`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 50px;
+
+  input {
+    border: none;
+    border-bottom: 1px solid #ccc;
+    outline: none;
+  }
+`;
+export const StyledInputContainer = styled.div<Props>`
+  display: flex;
+
+  flex-direction: ${(props) => (props.checkbox ? "row" : "column")};
+  align-items: ${(props) => (props.checkbox ? "center" : "")};
+  gap: 12px;
+  label {
+    font-size: 16px;
+  }
+`;
+
+export const InputTelBox = styled.div`
+  display: flex;
+  gap: 12px;
+`;
+export const InputTel = styled.input`
+  width: 35px;
+`;
+export const CheckBoxInput = styled.input``;
+export const Label = styled.label`
+  font-size: 16px;
 `;

@@ -32,7 +32,6 @@ const BaseModalWrapper: React.FC<BaseModalWrapperProps> = ({
         <DesktopCloseButton onClick={onBackdropClick}>
           <CloseSign onClick={onBackdropClick} />
         </DesktopCloseButton>
-        <Header>{header}</Header>
 
         {content}
       </DesktopModalContainer>
