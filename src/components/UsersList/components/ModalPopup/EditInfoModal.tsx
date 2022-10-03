@@ -17,6 +17,8 @@ import { ErrorParagraph } from "../../../styles/styles";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import pl from "date-fns/locale/pl"; // the locale you want
+import styled from "styled-components";
+import Checkbox from "./Checkbox";
 registerLocale("pl", pl); // register it with the name you want
 
 interface EditInfoModalProps {
@@ -29,7 +31,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
   onBackdropClick,
 }) => {
   const [startDate, setStartDate] = useState<Date | null>();
-
+  console.log(startDate);
   //custom hook for email validation
   const {
     value: enteredMail,
@@ -81,10 +83,8 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
     inputBlurHandler: phoneNumberBlurHandler,
     reset: resetPhoneNumber,
     isTouched: phoneNumberIsTouched,
-  } = useValidation(
-    (value: string) => value.trim() !== "" && value.length === 9
-  );
-
+  } = useValidation((value: string) => value.length === 9);
+  console.log(enteredPhoneNumberIsValid);
   const data = {
     mail: enteredMail,
     name: enteredName,
@@ -118,7 +118,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
       </p>
       <StyledForm onSubmit={submitHandler}>
         <StyledInputContainer>
-          <label htmlFor="mail">*E-mail</label>
+          <Label htmlFor="mail">*E-mail</Label>
           <input
             id="mail"
             type="email"
@@ -136,7 +136,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
           )}
         </StyledInputContainer>
         <StyledInputContainer>
-          <label htmlFor="name">*Imię</label>
+          <Label htmlFor="name">*Imię</Label>
           <input
             onChange={(e: React.FormEvent<HTMLInputElement>) =>
               nameChangeHandler(e)
@@ -153,7 +153,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
           )}
         </StyledInputContainer>
         <StyledInputContainer>
-          <label htmlFor="surname">*Nazwisko</label>
+          <Label htmlFor="surname">*Nazwisko</Label>
           <input
             onChange={(e: React.FormEvent<HTMLInputElement>) =>
               lastNameChangeHandler(e)
@@ -170,7 +170,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
           )}
         </StyledInputContainer>
         <StyledInputContainer>
-          <label htmlFor="birthdate">*data urodzenia</label>
+          <Label htmlFor="birthdate">*data urodzenia</Label>
           <DatePicker
             locale="pl"
             required
@@ -180,7 +180,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
           />
         </StyledInputContainer>
         <StyledInputContainer>
-          <label htmlFor="tel">*Telefon (previx, 9 cyfr)</label>
+          <Label htmlFor="tel">*Telefon (previx, 9 cyfr)</Label>
           <InputTelBox>
             <InputTel type="text" defaultValue="+48" maxLength={3} />
 
@@ -202,18 +202,10 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
           )}
         </StyledInputContainer>
         <StyledInputContainer />
-        <StyledInputContainer checkbox>
-          <CheckBoxInput type="checkbox"></CheckBoxInput>
-          <Label>*Polityka prywatności</Label>
-        </StyledInputContainer>
-        <StyledInputContainer checkbox>
-          <CheckBoxInput type="checkbox"></CheckBoxInput>
-          <Label>Zgody marketingowe</Label>
-        </StyledInputContainer>
-        <StyledInputContainer checkbox>
-          <CheckBoxInput required type="checkbox" />
-          <Label>*Regulamin sprzedaży</Label>
-        </StyledInputContainer>
+
+        <Checkbox label="* Polityka prywatności" />
+        <Checkbox label="Zgody marketingowe" />
+        <Checkbox label="* Regulamin sprzedaży" />
       </StyledForm>
       <StyledDiv>
         <p>*Pola obowiązkowe</p>
