@@ -5,6 +5,7 @@ type Props = {
   fw?: boolean;
   search?: boolean;
   edit?: boolean;
+  modal?: boolean;
 };
 export const StyledWrapper = styled.div`
   display: grid;
@@ -36,7 +37,7 @@ export const StyledInput = styled.input<Props>`
   padding: 0.5rem 0;
   width: 474px;
   height: ${(props) => (props.search ? "45px" : "52px")};
-  font-size: 22px;
+  font-size: ${(props) => (props.search ? "16px" : "")};
   text-align: left;
   padding-left: 60px;
   outline: ${(props) => (props.search ? "none" : "")};
@@ -60,6 +61,7 @@ export const StyledButton = styled.button<Props>`
   cursor: pointer;
   color: ${(props) => (props.small ? "black" : "#233f81;")};
   font-size: ${(props) => (props.small ? "14px" : "28px;")};
+  font-size: ${(props) => (props.search ? "18px" : ";")};
   font-weight: ${(props) => (props.fw ? "600" : "")};
   background-color: white;
   border-radius: ${(props) => (props.small ? "12px" : "7px")};
@@ -96,10 +98,10 @@ export const InputWithIcon = styled.div`
     position: absolute;
   }
 `;
-export const ErrorParagraph = styled.p`
+export const ErrorParagraph = styled.p<Props>`
   text-align: left;
-  padding-left: 6rem;
-
+  /* padding-left: 6rem; */
+  padding-left: ${(props) => (props.modal ? "" : "6rem")};
   font-size: 1.6rem;
   color: red;
 `;

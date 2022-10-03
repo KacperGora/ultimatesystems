@@ -5,8 +5,8 @@ import {
   CloseSign,
   DesktopCloseButton,
   DesktopModalContainer,
-  Header,
 } from "./ModalPopup";
+
 interface BaseModalWrapperProps {
   isModalVisible: boolean;
   onBackdropClick: () => void;

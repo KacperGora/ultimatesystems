@@ -13,15 +13,13 @@ import lockIcon from "../../assets/icons/lockIcon.svg";
 
 import React, { FormEvent, useEffect, useState } from "react";
 import useValidation from "../../hooks/useValidation";
+import validateEmail from "../../hooks/validateMail";
 
 const Register: React.FC = () => {
   const [invalidPasswords, setInvalidPasswords] = useState<boolean>(false);
   const [formIsValid, setFormIsValid] = useState<boolean>(false);
 
-  function validateEmail(email: string) {
-    const re = /\S+@\S+\.\S+/;
-    return re.test(email);
-  }
+
   //custom hook for email validation
   const {
     value: enteredMail,
