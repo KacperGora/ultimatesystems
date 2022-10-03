@@ -1,10 +1,5 @@
 import styled from "styled-components";
-import {
-  InputWithIcon,
-  StyledButton,
-  StyledInput,
-  StyledWrapper,
-} from "../../styles/styles";
+import { InputWithIcon, StyledButton, StyledInput } from "../../styles/styles";
 import { ButtonHeaderContainer, StyledFlexWrapper } from "../UserList.styles";
 const DivHelper = styled.div`
   padding-left: 26px;

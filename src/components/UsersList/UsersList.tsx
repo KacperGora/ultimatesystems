@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import List from "./components/List";
 import BaseModalWrapper from "./components/ModalPopup/BaseModalWrapper";
 import EditInfoModal from "./components/ModalPopup/EditInfoModal";
+import PaginatedList from "./components/PaginantedList/PaginantedList";
 import { UserListMainWrapper } from "./UserList.styles";
 
 const UsersList: React.FC = () => {
@@ -39,7 +40,7 @@ const UsersList: React.FC = () => {
             }
           />
         </DivHelper>
-        <List />
+        <PaginatedList/>
       </UserListMainWrapper>
     </>
   );

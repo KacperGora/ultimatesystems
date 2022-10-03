@@ -15,9 +15,9 @@ import validateEmail from "../../../../hooks/validateMail";
 import { ErrorParagraph } from "../../../styles/styles";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import pl from "date-fns/locale/pl"; // the locale you want
+import pl from "date-fns/locale/pl";
 import Checkbox from "./Checkbox";
-registerLocale("pl", pl); // register it with the name you want
+registerLocale("pl", pl);
 
 interface EditInfoModalProps {
   onBackdropClick: () => void;
@@ -72,7 +72,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
     reset: resetPhoneNumber,
     isTouched: phoneNumberIsTouched,
   } = useValidation((value: string) =>
-    /\d{3}[ -]?\d{3}[ -]?\d{3}(?!\w)/.test(value)
+    /\d{3}[ ]?\d{3}[ ]?\d{3}(?!\w)/.test(value)
   );
   console.log(enteredPhoneNumberHasError);
   const data = {
@@ -85,8 +85,18 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
     marketingConsents,
     salesRegulations,
   };
+  function formatPhoneNumber(enteredPhoneNumber: string) {
+    if (!enteredPhoneNumber) return enteredPhoneNumber;
+    const phoneNumber = enteredPhoneNumber.replace(/[^\d]/g, "");
+    return `${phoneNumber.slice(0, 3)} ${phoneNumber.slice(
+      3,
+      6
+    )} ${phoneNumber.slice(6, 9)}`;
+  }
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
+    // resetNameInput()
+    // resetMailInput()
   };
 
   return (
@@ -112,6 +122,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
         <StyledInputContainer>
           <Label htmlFor="mail">*E-mail</Label>
           <input
+            value={enteredMail}
             id="mail"
             type="email"
             onChange={(e: React.FormEvent<HTMLInputElement>) =>
@@ -130,6 +141,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
         <StyledInputContainer>
           <Label htmlFor="name">*Imię</Label>
           <input
+            value={enteredName}
             onChange={(e: React.FormEvent<HTMLInputElement>) =>
               nameChangeHandler(e)
             }
@@ -156,6 +168,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
             type="text"
             id="surname"
             required
+            value={enteredLastName}
           />
           {lastNameInputHasError && (
             <ErrorParagraph modal>* pole obowiązkowe</ErrorParagraph>
@@ -184,9 +197,10 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
               }
               onBlur={() => phoneNumberBlurHandler(true)}
               pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
-              maxLength={9}
               type="tel"
               id="tel"
+              maxLength={11}
+              value={formatPhoneNumber(enteredPhoneNumber)}
             />
           </InputTelBox>
           {enteredPhoneNumberHasError && (

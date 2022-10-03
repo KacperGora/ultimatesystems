@@ -13,6 +13,8 @@ const GlobalStyle = createGlobalStyle`
     font-size: 62.5%;
     scroll-behavior: smooth;
     max-width: 100%;
+     -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
     }
     ::placeholder {
         color: #989898;
