@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 const Label = styled.label`
   font-size: 16px;
 `;
 const CheckboxInput = styled.input`
-  -webkit-appearance: checkbox;
+  -webkit-appearance: none;
   appearance: none;
   cursor: pointer;
   margin: 0;
@@ -42,13 +42,22 @@ const DivHelp = styled.div`
 `;
 type Props = {
   label: string;
+  status?: (e: any) => any;
 };
-const Checkbox: React.FC<Props> = ({ label }) => {
+const Checkbox: React.FC<Props> = ({ label, status }) => {
+  const [checked, setIsChecked] = useState<boolean>(false);
+
   return (
     <>
       <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
         <DivHelp>
-          <CheckboxInput type="checkbox" name="checkbox" />
+          <CheckboxInput
+            onChange={(e: React.FormEvent<HTMLInputElement>) =>
+              status!(e.currentTarget.checked)
+            }
+            type="checkbox"
+            name="checkbox"
+          />
         </DivHelp>
         <Label>{label}</Label>
       </div>

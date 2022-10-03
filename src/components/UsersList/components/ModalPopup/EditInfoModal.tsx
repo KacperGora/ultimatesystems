@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 import {
-  CheckBoxInput,
   InputTel,
   InputTelBox,
   Label,
@@ -17,7 +16,6 @@ import { ErrorParagraph } from "../../../styles/styles";
 import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import pl from "date-fns/locale/pl"; // the locale you want
-import styled from "styled-components";
 import Checkbox from "./Checkbox";
 registerLocale("pl", pl); // register it with the name you want
 
@@ -31,7 +29,9 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
   onBackdropClick,
 }) => {
   const [startDate, setStartDate] = useState<Date | null>();
-  console.log(startDate);
+  const [privacyPolicy, setPrivacyPolicy] = useState(false);
+  const [marketingConsents, setMarketingConsents] = useState(false);
+  const [salesRegulations, setSalesRegulations] = useState(false);
   //custom hook for email validation
   const {
     value: enteredMail,
@@ -44,7 +44,6 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
   } = useValidation(
     (value: string) => value.trim() !== "" && validateEmail(value)
   );
-
   const {
     value: enteredName,
     isValid: enteredNameIsValid,
@@ -54,7 +53,6 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
     reset: resetNameInput,
     isTouched: nameIsTouched,
   } = useValidation((value: string) => value.trim() !== "");
-
   const {
     value: enteredLastName,
     isValid: enteredLastNameIsValid,
@@ -65,16 +63,6 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
     isTouched: lastNameIsTouched,
   } = useValidation((value: string) => value.trim() !== "");
 
-  // const {
-  //   value: entereBirthdateName,
-  //   isValid: entereBirthdateNameIsValid,
-  //   hasError: birthDateInputHasError,
-  //   valueChangeHandler: birthdateChangeHandler,
-  //   inputBlurHandler: birthdateBlurHandler,
-  //   reset: resetBirthdateInput,
-  //   isTouched: birthdateIsTouched,
-  // } = useValidation((value: string) => value.trim() !== "");
-
   const {
     value: enteredPhoneNumber,
     isValid: enteredPhoneNumberIsValid,
@@ -83,16 +71,20 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
     inputBlurHandler: phoneNumberBlurHandler,
     reset: resetPhoneNumber,
     isTouched: phoneNumberIsTouched,
-  } = useValidation((value: string) => value.length === 9);
-  console.log(enteredPhoneNumberIsValid);
+  } = useValidation((value: string) =>
+    /\d{3}[ -]?\d{3}[ -]?\d{3}(?!\w)/.test(value)
+  );
+  console.log(enteredPhoneNumberHasError);
   const data = {
     mail: enteredMail,
     name: enteredName,
     lastName: enteredLastName,
     birthDate: startDate,
     phoneNumber: enteredPhoneNumber,
+    privacyPolicy,
+    marketingConsents,
+    salesRegulations,
   };
-  console.log(data);
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
   };
@@ -203,9 +195,18 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
         </StyledInputContainer>
         <StyledInputContainer />
 
-        <Checkbox label="* Polityka prywatności" />
-        <Checkbox label="Zgody marketingowe" />
-        <Checkbox label="* Regulamin sprzedaży" />
+        <Checkbox
+          status={(e: any) => setPrivacyPolicy(e)}
+          label="* Polityka prywatności"
+        />
+        <Checkbox
+          status={(e: any) => setMarketingConsents(e)}
+          label="Zgody marketingowe"
+        />
+        <Checkbox
+          status={(e: any) => setSalesRegulations(e)}
+          label="Z* Regulamin sprzedaży"
+        />
       </StyledForm>
       <StyledDiv>
         <p>*Pola obowiązkowe</p>
