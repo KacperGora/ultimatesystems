@@ -6,6 +6,7 @@ type Props = {
   search?: boolean;
   edit?: boolean;
   modal?: boolean;
+  active?: boolean;
 };
 export const StyledWrapper = styled.div`
   display: grid;
@@ -76,6 +77,7 @@ export const StyledButton = styled.button<Props>`
   min-height: ${(props) => (props.search ? "45px" : "")};
   transition: all 300ms;
   border: ${(props) => (props.search ? "1px solid #24399B" : "")};
+
   :hover {
     color: white;
     background-color: #24399b;
@@ -90,7 +92,7 @@ export const InputWithIcon = styled.div`
   position: relative;
   .icon {
     position: absolute;
-    /* padding: 10px; */
+
     color: #989898;
     padding: 10px;
   }
@@ -100,7 +102,7 @@ export const InputWithIcon = styled.div`
 `;
 export const ErrorParagraph = styled.p<Props>`
   text-align: left;
-  /* padding-left: 6rem; */
+
   padding-left: ${(props) => (props.modal ? "" : "6rem")};
   font-size: 1.6rem;
   color: red;

@@ -3,11 +3,8 @@ import axios from "axios";
 import styled from "styled-components";
 import React, { useState } from "react";
 import User from "../User";
-// import Plant from "./Plant";
-// import Pagination from "./Pagination";
-// import SortButton from "./SortButton";
-import { QueryParamProvider } from "use-query-params";
 import { useAppSelector } from "../../../../store/hook";
+import Pagination from "./Pagination";
 const fetcher = async (url: string) => {
   const res = await axios.get(url);
   return res.data;
@@ -30,33 +27,26 @@ const SortToolsContainer = styled.div`
 `;
 
 const List: React.FC = () => {
-  const byActive = useAppSelector((state: any) => state.query.byActive);
-  const byName = useAppSelector((state: any) => state.query.byName);
-  console.log(byName);
+  const filterByActive = useAppSelector(
+    (state: any) => state.query.filterByActive
+  );
+  const filterByName = useAppSelector((state: any) => state.query.filterByName);
+
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(1);
   const [sortByName, setSortByName] = useState("");
   const [sortByMail, setSortByMail] = useState("");
   const [sortByLastName, setSortByLastName] = useState("");
   const [sortByBirth, setSortByBirth] = useState("");
-  const [order, setOrder] = useState("");
-  const limit = 10;
+console.log(limit);
   // fetch()
   const { data, error } = useSWR(
-    `  http://api.ultimate.systems/public/index.php/api/v1/auth/users?sort%5Bname%5D=${sortByName}&sort%5Bemail%5D=${sortByMail}&filter%5Bis_activated%5D=${byActive}&sort%5Bbirth_date%5D=${sortByBirth}&search=${byName}&page=1&perPage=34`,
+    `  http://api.ultimate.systems/public/index.php/api/v1/auth/users?${
+      filterByActive[0] + filterByActive[1]
+    }&${filterByName[0] + filterByName[1]}&page=${page}&perPage=${limit}`,
     fetcher
   );
-
-  // fetch(
-  //   "http://api.ultimate.systems/public/index.php/api/v1/auth/users?sort%5B&sort%5Bsurname%5D=desc&page=1&perPage=5",
-  //   {
-  //     method: "GET",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   }
-  // )
-  //   .then((res) => res.json())
-  //   .then((data) => console.log(data));
+  console.log(data);
 
   return (
     <Container>
@@ -102,12 +92,13 @@ const List: React.FC = () => {
         <User user={user} key={user.id} />
       ))}
 
-      {/* <Pagination
+      <Pagination
         page={page}
         setPage={setPage}
         limit={limit}
-        total={data.total}
-      /> */}
+        setLimit={setLimit}
+        total={data?.total}
+      />
     </Container>
   );
 };

@@ -1,10 +1,5 @@
 import styled from "styled-components";
-type Props = {
-  isInvalid?: boolean;
-  small?: boolean;
-  fw?: boolean;
-  search?: boolean;
-};
+
 export const StyledFlexWrapper = styled.div`
   display: flex;
   justify-content: space-between;

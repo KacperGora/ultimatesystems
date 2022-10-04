@@ -16,7 +16,7 @@ const PaginatedList: React.FC = () => {
   return (
     <Container>
       <List />
-    
+      
    
     </Container>
   );
