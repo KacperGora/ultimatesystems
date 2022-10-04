@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import List from "../List";
+import List from "./List";
 import React from "react";
 const Container = styled.div`
   display: flex;
@@ -12,26 +12,12 @@ const Container = styled.div`
   }
 `;
 
-const Header = styled.header`
-  padding: 2rem 0 2rem 2rem;
-  background: var(--color-primary);
-  color: white;
-`;
-
-const Title = styled.h2`
-  margin: 0;
-`;
-
-const PaginatedList = () => {
+const PaginatedList: React.FC = () => {
   return (
     <Container>
-      <Header>
-        <Title>Paginated List in React with SWR</Title>
-      </Header>
-      {/* <main> */}
-        <List />
+      <List />
     
-      {/* </main> */}
+   
     </Container>
   );
 };

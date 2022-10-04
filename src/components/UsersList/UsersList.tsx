@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { StyledButton, StyledWrapper } from "../styles/styles";
 import Header from "./components/Header";
-import List from "./components/List";
+import List from "./components/PaginantedList/List";
 import BaseModalWrapper from "./components/ModalPopup/BaseModalWrapper";
 import EditInfoModal from "./components/ModalPopup/EditInfoModal";
 import PaginatedList from "./components/PaginantedList/PaginantedList";

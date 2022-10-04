@@ -44,7 +44,7 @@ type Props = {
   user: any;
 };
 const User: React.FC<Props> = ({ user }) => {
-  console.log(user);
+
   const userName: string = user.name ? user.name : "Robert";
   const userLastName = user.surname ? user.name : "Kowalski";
   const firstLetter = userName.charAt(0).toUpperCase();
@@ -55,11 +55,11 @@ const User: React.FC<Props> = ({ user }) => {
   return (
     <Container>
       <div style={{ display: "flex", alignItems: "center", gap: "50px" }}>
-        <UserImg>{firstLetter + firstLetterLastName}</UserImg>
-        <DetailParagraph>{user.name ? user.name : "Robert"}</DetailParagraph>
+        <UserImg>{firstLetterLastName}</UserImg>
+        <DetailParagraph>{user.name }</DetailParagraph>
       </div>
       <DetailParagraph>
-        {user.surname ? user.surname : "Gowalski"}
+        {user.surname}
       </DetailParagraph>
       <DetailParagraph>{user.email}</DetailParagraph>
       <DetailParagraph>{formattedDate}</DetailParagraph>
