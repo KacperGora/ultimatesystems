@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import axios from "axios";
 import styled from "styled-components";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import User from "../User";
 import { useAppSelector } from "../../../../store/hook";
 import Pagination from "./Pagination";
@@ -31,22 +31,45 @@ const List: React.FC = () => {
     (state: any) => state.query.filterByActive
   );
   const filterByName = useAppSelector((state: any) => state.query.filterByName);
-
+  console.log(filterByName);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(1);
+  const [limit, setLimit] = useState(5);
+  const [typeSorting, setTypeSorting] = useState("");
   const [sortByName, setSortByName] = useState("");
   const [sortByMail, setSortByMail] = useState("");
   const [sortByLastName, setSortByLastName] = useState("");
   const [sortByBirth, setSortByBirth] = useState("");
-console.log(limit);
-  // fetch()
+  const [params, setParams] = useState("");
+
   const { data, error } = useSWR(
-    `  http://api.ultimate.systems/public/index.php/api/v1/auth/users?${
-      filterByActive[0] + filterByActive[1]
-    }&${filterByName[0] + filterByName[1]}&page=${page}&perPage=${limit}`,
+    ` http://api.ultimate.systems/public/index.php/api/v1/auth/users?${params}filter%5Bis_activated%5D=${filterByActive}&search=${filterByName}&page=${page}&perPage=${limit}
+    `,
     fetcher
   );
-  console.log(data);
+  if (error) {
+    throw new Error(error.message);
+  }
+  useEffect(() => {
+    const configureUrl = (type: string) => {
+      switch (type) {
+        case "name":
+          setParams(`sort%5Bname%5D=${sortByName}&`);
+          break;
+
+        case "surname":
+          setParams(`sort%5Bsurname%5D=${sortByLastName}&`);
+          break;
+        case "email":
+          setParams(`sort%5Bemail%5D=${sortByMail}&`);
+          break;
+
+        case "birth_date":
+          setParams(`sort%5Bbirth_date%5D=${sortByBirth}&`);
+          break;
+      }
+    };
+    configureUrl(typeSorting);
+  }, [sortByBirth, sortByLastName, sortByMail, sortByName, typeSorting]);
 
   return (
     <Container>
@@ -54,6 +77,7 @@ console.log(limit);
         <select
           onChange={(e: React.FormEvent<HTMLSelectElement>) => {
             setSortByName(e.currentTarget.value);
+            setTypeSorting("name");
           }}
         >
           <option value="">Imię</option>
@@ -63,6 +87,7 @@ console.log(limit);
         <select
           onChange={(e: React.FormEvent<HTMLSelectElement>) => {
             setSortByLastName(e.currentTarget.value);
+            setTypeSorting("surname");
           }}
         >
           <option value="">Nazwisko</option>
@@ -72,6 +97,7 @@ console.log(limit);
         <select
           onChange={(e: React.FormEvent<HTMLSelectElement>) => {
             setSortByMail(e.currentTarget.value);
+            setTypeSorting("email");
           }}
         >
           <option value="">E-mail</option>
@@ -79,9 +105,10 @@ console.log(limit);
           <option value="desc">Z-A</option>
         </select>
         <select
-          onChange={(e: React.FormEvent<HTMLSelectElement>) =>
-            setSortByBirth(e.currentTarget.value)
-          }
+          onChange={(e: React.FormEvent<HTMLSelectElement>) => {
+            setSortByBirth(e.currentTarget.value);
+            setTypeSorting("birth_date");
+          }}
         >
           <option value="">Data urodzenia</option>
           <option value="asc">Rosnąco</option>

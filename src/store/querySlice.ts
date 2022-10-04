@@ -2,17 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface QueryState {
-  filterByActive: string[];
-  filterByName: string[];
-  sortByName: string[];
-  sortByLastName: string[];
+  filterByActive: string;
+  filterByName: string;
+  refreshToken: string;
 }
 
 const initialState: QueryState = {
-  filterByActive: ["filter%5Bis_activated%5D=", ""],
-  filterByName: ["search=", ""],
-  sortByName: ["sort%5Bname%5D=", ""],
-  sortByLastName: ["sort%5Bsurname%5D=", ""],
+  filterByActive: "",
+  filterByName: "",
+  refreshToken: "",
 };
 
 export const QuerySlice = createSlice({
@@ -21,16 +19,14 @@ export const QuerySlice = createSlice({
   initialState,
   reducers: {
     setFilterByActive: (state, action: PayloadAction<string>) => {
-      state.filterByActive[1] = action.payload;
+      state.filterByActive = action.payload;
     },
     setFilterByName: (state, action: PayloadAction<string>) => {
-      state.filterByName[1] = action.payload;
+      state.filterByName = action.payload;
     },
-    setSortByName: (state, action: PayloadAction<string>) => {
-      state.sortByName[1] = action.payload;
-    },
-    setSortByLastName: (state, action: PayloadAction<string>) => {
-      state.sortByLastName[1] = action.payload;
+
+    setRefreshToken: (state, action: PayloadAction<string>) => {
+      state.refreshToken = action.payload;
     },
   },
 });
@@ -38,8 +34,8 @@ export const QuerySlice = createSlice({
 export const {
   setFilterByActive,
   setFilterByName,
-  setSortByName,
-  setSortByLastName,
+
+  setRefreshToken,
 } = QuerySlice.actions;
 
 export default QuerySlice.reducer;

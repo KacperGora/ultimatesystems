@@ -38,6 +38,7 @@ const PageInput = styled.form`
   }
   button {
     background-color: none;
+    cursor: pointer;
   }
   label {
     font-size: 16px;
@@ -58,7 +59,7 @@ const Pagination: React.FC<PaginationProps> = ({
   limit,
   setLimit,
 }) => {
-  const [number, setNumber] = useState("");
+  const [number, setNumber] = useState<string | number>(5);
   const goToFirstPage = () => setPage(1);
 
   const goToLastPage = () => setPage(getLastPage());

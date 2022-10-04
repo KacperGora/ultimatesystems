@@ -13,8 +13,10 @@ import {
 import emailIcon from "../../assets/icons/mailIcon.svg";
 import lockIcon from "../../assets/icons/lockIcon.svg";
 import useValidation from "../../hooks/useValidation";
-
+import { setRefreshToken } from "../../store/querySlice";
+import { useAppDispatch } from "../../store/hook";
 const Login: React.FC = () => {
+  const dispatch = useAppDispatch();
   const [formIsValid, setFormIsValid] = useState<boolean>(false);
   function validateEmail(email: string) {
     const re = /\S+@\S+\.\S+/;
@@ -52,6 +54,7 @@ const Login: React.FC = () => {
     username: enteredMail,
     password: enteredPassword,
   };
+
   const formSubmitHandler = (e: FormEvent) => {
     e.preventDefault();
 
@@ -64,7 +67,9 @@ const Login: React.FC = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        document.cookie = `token=${data.token};`;
+        document.cookie = `${data.token}`;
+        localStorage.setItem("refreshToken", data.refresh_token);
+        dispatch(setRefreshToken(data.refresh_token));
       });
   };
 
@@ -121,7 +126,12 @@ const Login: React.FC = () => {
             )}
           </InputWithIcon>
         </StyledInputContainer>
-        <StyledButton title={formIsValid ? 'Zaloguj' : 'Uzupełnij poprawnie dane'} disabled={!formIsValid}>Zaloguj się</StyledButton>
+        <StyledButton
+          title={formIsValid ? "Zaloguj" : "Uzupełnij poprawnie dane"}
+          disabled={!formIsValid}
+        >
+          Zaloguj się
+        </StyledButton>
       </StyledForm>
     </StyledWrapper>
   );
