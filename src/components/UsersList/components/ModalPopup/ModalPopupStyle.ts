@@ -88,15 +88,6 @@ export const DesktopCloseButton = styled(CloseButton)`
 `;
 ////MODAL FORM ////
 
-export const StyledModalForm = styled.form``;
-
-// export const StyledFormGridContainer = styled.div`
-//   display: grid;
-//   grid-template-columns: repeat(3, 1fr);
-
-//   gap: 50px;
-// `;
-
 export const StyledForm = styled.form`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -123,7 +114,6 @@ export const StyledInputContainer = styled.div<Props>`
 export const InputTelBox = styled.div`
   display: flex;
   gap: 12px;
-
 `;
 export const InputTel = styled.input`
   width: 35px;
@@ -172,6 +162,74 @@ export const SuccessButton = styled(ModalButton)`
   font-weight: 600;
   transition: all 300ms;
   :hover {
-    background-color: #4EB100;
+    background-color: #4eb100;
   }
+`;
+export const HeaderParagraph = styled.p`
+  display: flex;
+  align-self: flex-start;
+  font-size: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  padding-bottom: 12px;
+`;
+
+export const Overlay = styled.div`
+  background-color: rgba(0, 0, 0, 0.35);
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+`;
+
+export const CheckBoxLabel = styled.label`
+  font-size: 16px;
+`;
+export const CheckboxInput = styled.input`
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  margin: 0;
+  font: inherit;
+  color: black;
+  width: 24px;
+  height: 24px;
+  border: 1px solid brown;
+  border-radius: 6px;
+  transform: translateY(-0.075em);
+  display: grid;
+  place-content: center;
+  /* position: relative; */
+  &::before {
+    content: "";
+    width: 14px;
+    height: 14px;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    box-shadow: inset 1em 1em var(--form-control-color);
+    transform-origin: bottom left;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+
+    background-color: #676767;
+  }
+  &:checked::before {
+    transform: scale(1);
+  }
+`;
+export const DivHelper = styled.div`
+  border: 0.5px solid #676767;
+  border-radius: 8px;
+  width: 25px;
+  height: 25px;
+`;
+export const DivFlexContainer = styled.div`
+  display: flex;
+  gap: 16px;
+  align-items: "center";
 `;

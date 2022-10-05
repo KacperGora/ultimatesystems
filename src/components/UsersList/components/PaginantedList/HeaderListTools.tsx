@@ -1,15 +1,25 @@
 import styled from "styled-components";
-import React, { useState } from "react";
-import { useAppSelector, useAppDispatch } from "../../../store/hook";
+import React from "react";
+import { useAppDispatch } from "../../../../store/hook";
+import {
+  ButtonHeaderContainer,
+  StyledFlexWrapper,
+} from "../../UserList.styles";
+import {
+  InputWithIcon,
+  StyledButton,
+  StyledInput,
+} from "../../../styles/styles";
+import {
+  setFilterByActive,
+  setFilterByName,
+} from "../../../../store/querySlice";
 
-import { setFilterByActive, setFilterByName } from "../../../store/querySlice";
-import { InputWithIcon, StyledButton, StyledInput } from "../../styles/styles";
-import { ButtonHeaderContainer, StyledFlexWrapper } from "../UserList.styles";
 const DivHelper = styled.div`
   padding-left: 26px;
 `;
 
-const Header: React.FC = () => {
+const HeaderListTools: React.FC = () => {
   const dispatch = useAppDispatch();
 
   return (
@@ -60,4 +70,4 @@ const Header: React.FC = () => {
     </>
   );
 };
-export default Header;
+export default HeaderListTools;

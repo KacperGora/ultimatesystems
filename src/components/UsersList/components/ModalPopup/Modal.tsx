@@ -1,25 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import styled from "styled-components";
+import { useAppDispatch } from "../../../../store/hook";
+import { toggleModal } from "../../../../store/modalSlice";
+import { Overlay } from "./ModalPopupStyle";
 interface ModalProps {
-  onBackdropClick: () => void;
   children?: React.ReactNode;
 }
-const Overlay = styled.div`
-  background-color: rgba(0, 0, 0, 0.35);
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1;
-`;
-const Modal: React.FC<ModalProps> = ({ onBackdropClick, children }) => {
+
+const Modal: React.FC<ModalProps> = ({ children }) => {
+  const dispatch = useAppDispatch();
   return ReactDOM.createPortal(
-    <Overlay onClick={onBackdropClick}>
+    <Overlay onClick={() => dispatch(toggleModal())}>
       <div onClick={(e) => e.stopPropagation()}>{children}</div>
     </Overlay>,
     document.getElementById("modal-root")!

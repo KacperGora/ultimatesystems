@@ -9,19 +9,17 @@ import {
   StyledInputContainer,
   StyledLabel,
   StyledWrapper,
-} from "../styles/styles";
-import emailIcon from "../../assets/icons/mailIcon.svg";
-import lockIcon from "../../assets/icons/lockIcon.svg";
-import useValidation from "../../hooks/useValidation";
-import { setRefreshToken } from "../../store/querySlice";
-import { useAppDispatch } from "../../store/hook";
+} from "../../styles/styles";
+import emailIcon from "../../../assets/icons/mailIcon.svg";
+import lockIcon from "../../../assets/icons/lockIcon.svg";
+import useValidation from "../../../hooks/useValidation";
+import { setRefreshToken } from "../../../store/querySlice";
+import { useAppDispatch } from "../../../store/hook";
+import { validateEmail } from "../Helpers/validateEmail";
+import { apiCall } from "../Helpers/apiCall";
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
-  const [formIsValid, setFormIsValid] = useState<boolean>(false);
-  function validateEmail(email: string) {
-    const re = /\S+@\S+\.\S+/;
-    return re.test(email);
-  }
+  const [formIsValid, setFormIsValid] = useState(false);
 
   const {
     value: enteredMail,
@@ -29,13 +27,12 @@ const Login: React.FC = () => {
     hasError: mailInputHasError,
     valueChangeHandler: mailChangeHandler,
     inputBlurHandler: mailBlurHandler,
-    reset: resetMailInput,
     isTouched: mailIsTouched,
+    reset: resetMailInput,
   } = useValidation(
     (value: string) => value.trim() !== "" && validateEmail(value)
   );
 
-  // custom hook for password validation
   const {
     value: enteredPassword,
     isValid: enteredPasswordIsValid,
@@ -45,12 +42,14 @@ const Login: React.FC = () => {
     reset: resetPasswordInput,
     isTouched: passwordIsTouched,
   } = useValidation((value: string) => value.trim().length >= 8);
+
   useEffect(() => {
     if (enteredPasswordIsValid && enteredMailIsValid) {
       setFormIsValid(true);
     } else setFormIsValid(false);
   }, [enteredMailIsValid, enteredPasswordIsValid]);
-  const data = {
+
+  const credentials = {
     username: enteredMail,
     password: enteredPassword,
   };
@@ -58,19 +57,19 @@ const Login: React.FC = () => {
   const formSubmitHandler = (e: FormEvent) => {
     e.preventDefault();
 
-    fetch("http://api.ultimate.systems/public/index.php/api/v1/login/check", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        document.cookie = `${data.token}`;
-        localStorage.setItem("refreshToken", data.refresh_token);
-        dispatch(setRefreshToken(data.refresh_token));
-      });
+    apiCall(
+      "http://api.ultimate.systems/public/index.php/api/v1/login/check",
+      credentials,
+      "POST"
+    ).then((data) => {
+      if (data) {
+        resetMailInput();
+        resetPasswordInput();
+      }
+      document.cookie = `${data.token}`;
+      localStorage.setItem("refreshToken", data.refresh_token);
+      dispatch(setRefreshToken(data.refresh_token));
+    });
   };
 
   return (
@@ -85,15 +84,13 @@ const Login: React.FC = () => {
               isInvalid={!enteredMailIsValid && mailIsTouched}
               required
               type="email"
+              value={enteredMail}
               placeholder="piotrkowalski@gmail.com"
               onChange={(e: React.FormEvent<HTMLInputElement>) =>
                 mailChangeHandler(e)
               }
               onBlur={() => {
                 mailBlurHandler(true);
-              }}
-              onFocus={() => {
-                resetMailInput();
               }}
             />
             {mailInputHasError && (
@@ -108,6 +105,7 @@ const Login: React.FC = () => {
             <StyledInput
               isInvalid={!enteredPasswordIsValid && passwordIsTouched}
               required
+              value={enteredPassword}
               type="password"
               minLength={8}
               placeholder="Minimum 8 znaków"
@@ -117,10 +115,7 @@ const Login: React.FC = () => {
               onBlur={() => {
                 passwordBlurHandler(true);
               }}
-              onFocus={() => {
-                resetPasswordInput();
-              }}
-            />{" "}
+            />
             {passwordInputHasError && (
               <ErrorParagraph>*zbyt mała ilość znaków</ErrorParagraph>
             )}

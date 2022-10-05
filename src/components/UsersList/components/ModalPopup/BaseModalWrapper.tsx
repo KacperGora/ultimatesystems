@@ -1,38 +1,31 @@
 import React from "react";
-
+import { useAppDispatch, useAppSelector } from "../../../../store/hook";
+import { toggleModal } from "../../../../store/modalSlice";
 import Modal from "./Modal";
-import {
-  CloseSign,
-  DesktopCloseButton,
-  DesktopModalContainer,
-} from "./ModalPopup";
+import { CloseSign, DesktopCloseButton, DesktopModalContainer } from "./ModalPopupStyle";
 
 interface BaseModalWrapperProps {
-  isModalVisible: boolean;
-  onBackdropClick: () => void;
   header?: string;
   message?: string;
   content?: React.ReactNode;
 }
 
-const BaseModalWrapper: React.FC<BaseModalWrapperProps> = ({
-  onBackdropClick,
-  isModalVisible,
-  header,
+const BaseModalWrapper: React.FC<BaseModalWrapperProps> = ({ content }) => {
+  const dispatch = useAppDispatch();
+  const modalIsVisible = useAppSelector(
+    (state: any) => state.modal.modalIsShow
+  );
 
-  content,
-}) => {
-  if (!isModalVisible) {
+  if (!modalIsVisible) {
     return null;
   }
 
   return (
-    <Modal onBackdropClick={onBackdropClick}>
+    <Modal>
       <DesktopModalContainer>
-        <DesktopCloseButton onClick={onBackdropClick}>
-          <CloseSign onClick={onBackdropClick} />
+        <DesktopCloseButton onClick={() => dispatch(toggleModal())}>
+          <CloseSign onClick={() => dispatch(toggleModal())} />
         </DesktopCloseButton>
-
         {content}
       </DesktopModalContainer>
     </Modal>

@@ -1,6 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import DatePicker, { registerLocale } from "react-datepicker";
+import pl from "date-fns/locale/pl";
+import "react-datepicker/dist/react-datepicker.css";
+import styled from "styled-components";
 
+import useValidation from "../../../../hooks/useValidation";
+
+import Checkbox from "./Checkbox";
+import SuccessModal from "./SuccessModal";
+import { validateEmail } from "../../../Auth/Helpers/validateEmail";
+import { ErrorParagraph } from "../../../styles/styles";
+import { formatPhoneNumber } from "./Helpers/phoneNumberFormat";
+import { phoneNumberRegexTest } from "./Helpers/phoneNumberRegexTest";
+import { useAppDispatch } from "../../../../store/hook";
+import { toggleModal } from "../../../../store/modalSlice";
 import {
+  HeaderParagraph,
   InputTel,
   InputTelBox,
   Label,
@@ -8,54 +23,41 @@ import {
   StyledDiv,
   StyledForm,
   StyledInputContainer,
-} from "./ModalPopup";
-import SuccessModal from "./SuccessModal";
-import useValidation from "../../../../hooks/useValidation";
-import validateEmail from "../../../../hooks/validateMail";
-import { ErrorParagraph } from "../../../styles/styles";
-import DatePicker, { registerLocale } from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import pl from "date-fns/locale/pl";
-import Checkbox from "./Checkbox";
+} from "./ModalPopupStyle";
 
 registerLocale("pl", pl);
-
-interface EditInfoModalProps {
-  onBackdropClick: () => void;
-  isModalVisible: boolean;
-}
-
-const EditInfoModal: React.FC<EditInfoModalProps> = ({
-  isModalVisible,
-  onBackdropClick,
-}) => {
+const DivHelper = styled.div`
+  display: flex;
+  gap: 48px;
+`;
+const EditInfoModal: React.FC = () => {
+  const dispatch = useAppDispatch();
   const [startDate, setStartDate] = useState<Date>(new Date());
-
+  const [privacyError, setPrivacyError] = useState(false);
+  const [salesError, setSalesError] = useState(false);
   const [privacyPolicy, setPrivacyPolicy] = useState(false);
-  const [marketingConsents, setMarketingConsents] = useState(false);
-  const [salesRegulations, setSalesRegulations] = useState(false);
+  const [marketingAgreements, setMarketingAgreements] = useState(false);
+  const [sellingRegulation, setSellingRegulation] = useState(false);
+  const [prefix, setPrefix] = useState("");
   const [status, setStatus] = useState(false);
+  const [formIsValid, setFormIsValid] = useState(false);
 
-  //custom hook for email validation
   const {
     value: enteredMail,
     isValid: enteredMailIsValid,
     hasError: mailInputHasError,
     valueChangeHandler: mailChangeHandler,
     inputBlurHandler: mailBlurHandler,
-    reset: resetMailInput,
-    isTouched: mailIsTouched,
   } = useValidation(
     (value: string) => value.trim() !== "" && validateEmail(value)
   );
+
   const {
     value: enteredName,
     isValid: enteredNameIsValid,
     hasError: nameInputHasError,
     valueChangeHandler: nameChangeHandler,
     inputBlurHandler: nameBlurHandler,
-    reset: resetNameInput,
-    isTouched: nameIsTouched,
   } = useValidation((value: string) => value.trim() !== "");
   const {
     value: enteredLastName,
@@ -63,8 +65,6 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
     hasError: lastNameInputHasError,
     valueChangeHandler: lastNameChangeHandler,
     inputBlurHandler: lastNameBlurHandler,
-    reset: resetLastNameInput,
-    isTouched: lastNameIsTouched,
   } = useValidation((value: string) => value.trim() !== "");
 
   const {
@@ -73,11 +73,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
     hasError: enteredPhoneNumberHasError,
     valueChangeHandler: phoneNumberChangeHandler,
     inputBlurHandler: phoneNumberBlurHandler,
-    reset: resetPhoneNumber,
-    isTouched: phoneNumberIsTouched,
-  } = useValidation((value: string) =>
-    /\d{3}[ ]?\d{3}[ ]?\d{3}(?!\w)/.test(value)
-  );
+  } = useValidation((value: string) => phoneNumberRegexTest(value));
 
   const data = {
     mail: enteredMail,
@@ -85,23 +81,30 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
     surname: enteredLastName,
     birthDate: startDate,
     phoneNumber: +enteredPhoneNumber,
+    phonePrefix: prefix,
     privacyPolicy,
-    marketingConsents,
-    salesRegulations,
+    marketingAgreements,
+    sellingRegulation,
   };
-
-  function formatPhoneNumber(enteredPhoneNumber: string) {
-    if (!enteredPhoneNumber) return enteredPhoneNumber;
-    const phoneNumber = enteredPhoneNumber.replace(/[^\d]/g, "");
-    return `${phoneNumber.slice(0, 3)} ${phoneNumber.slice(
-      3,
-      6
-    )} ${phoneNumber.slice(6, 9)}`;
-  }
-
-  const refresh = {
-    refresh_token: localStorage.getItem("refreshToken"),
-  };
+  useEffect(() => {
+    if (
+      enteredPhoneNumberIsValid &&
+      enteredMailIsValid &&
+      enteredNameIsValid &&
+      enteredLastNameIsValid &&
+      privacyPolicy &&
+      sellingRegulation
+    )
+      setFormIsValid(true);
+    else setFormIsValid(false);
+  }, [
+    enteredLastNameIsValid,
+    enteredMailIsValid,
+    enteredNameIsValid,
+    enteredPhoneNumberIsValid,
+    privacyPolicy,
+    sellingRegulation,
+  ]);
 
   const refreshFn = () => {
     fetch(
@@ -116,14 +119,14 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data.token);
         localStorage.clear();
         localStorage.setItem("refreshToken", data.refresh_token);
         document.cookie = data.token;
-        patchFn();
       });
   };
-  const patchFn = () => {
+
+  const patchFn = (data: {}) => {
+    
     fetch("http://api.ultimate.systems/public/index.php/api/v1/auth/user", {
       method: "PATCH",
       headers: {
@@ -134,6 +137,7 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         if (data === "Proccess completed!") {
           setStatus(true);
         }
@@ -142,30 +146,30 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
         }
       });
   };
+  const refresh = {
+    refresh_token: localStorage.getItem("refreshToken"),
+  };
 
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
-    patchFn();
+    if (!sellingRegulation) {
+      setSalesError(true);
+    } else setSalesError(false);
+    if (!privacyPolicy) {
+      setPrivacyError(true);
+    } else {
+      setPrivacyError(false);
+    }
+  
+
+    formIsValid && patchFn(data);
   };
 
   return (
     <>
       {!status ? (
         <>
-          {" "}
-          <p
-            style={{
-              display: "flex",
-              alignSelf: "flex-start",
-              fontSize: "16px",
-              marginBottom: "24px",
-              borderBottom: "1px solid #ccc",
-              width: "100%",
-              paddingBottom: "12px",
-            }}
-          >
-            Edycja danych
-          </p>
+          <HeaderParagraph>Edycja danych</HeaderParagraph>
           <StyledForm onSubmit={submitHandler}>
             <StyledInputContainer>
               <Label htmlFor="mail">*E-mail</Label>
@@ -239,7 +243,14 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
             <StyledInputContainer>
               <Label htmlFor="tel">*Telefon (previx, 9 cyfr)</Label>
               <InputTelBox>
-                <InputTel type="text" defaultValue="+48" maxLength={3} />
+                <InputTel
+                  type="text"
+                  defaultValue="+48"
+                  maxLength={3}
+                  onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                    setPrefix(e.currentTarget.value)
+                  }
+                />
 
                 <input
                   required
@@ -248,7 +259,6 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
                     phoneNumberChangeHandler(e)
                   }
                   onBlur={() => phoneNumberBlurHandler(true)}
-                  pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
                   type="tel"
                   id="tel"
                   maxLength={11}
@@ -260,39 +270,50 @@ const EditInfoModal: React.FC<EditInfoModalProps> = ({
               )}
             </StyledInputContainer>
             <StyledInputContainer />
+            <StyledInputContainer>
+              <Checkbox
+                id="policy"
+                status={(e: any) => setPrivacyPolicy(e)}
+                label="* Polityka prywatności"
+              />
+              {privacyError && (
+                <ErrorParagraph modal>* pole obowiązkowe</ErrorParagraph>
+              )}
+            </StyledInputContainer>
 
             <Checkbox
-              status={(e: any) => setPrivacyPolicy(e)}
-              label="* Polityka prywatności"
-            />
-            <Checkbox
-              status={(e: any) => setMarketingConsents(e)}
+              id="marketing"
+              status={(e: any) => setMarketingAgreements(e)}
               label="Zgody marketingowe"
             />
-            <Checkbox
-              status={(e: any) => setSalesRegulations(e)}
-              label="Z* Regulamin sprzedaży"
-            />
+            <StyledInputContainer>
+              <Checkbox
+                id="sales"
+                status={(e: any) => setSellingRegulation(e)}
+                label="* Regulamin sprzedaży"
+              />
+              {salesError && (
+                <ErrorParagraph modal>* pole obowiązkowe</ErrorParagraph>
+              )}
+            </StyledInputContainer>
           </StyledForm>
           <StyledDiv>
             <p>*Pola obowiązkowe</p>
-            <div style={{ display: "flex", gap: "48px" }}>
-              <ModalButton onClick={onBackdropClick} cancel>
+            <DivHelper>
+              <ModalButton onClick={() => dispatch(toggleModal())} cancel>
                 Anuluj
               </ModalButton>
               <ModalButton onClick={submitHandler} type="submit">
                 Zapisz
               </ModalButton>
-            </div>
+            </DivHelper>
           </StyledDiv>
         </>
       ) : (
-        <SuccessModal
-          isModalVisible={isModalVisible}
-          onBackdropClick={onBackdropClick}
-        />
+        <SuccessModal />
       )}
     </>
   );
 };
+
 export default EditInfoModal;

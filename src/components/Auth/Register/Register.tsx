@@ -7,18 +7,18 @@ import {
   StyledInputContainer,
   StyledLabel,
   StyledWrapper,
-} from "../styles/styles";
-import emailIcon from "../../assets/icons/mailIcon.svg";
-import lockIcon from "../../assets/icons/lockIcon.svg";
+} from "../../styles/styles";
+import emailIcon from "../../../assets/icons/mailIcon.svg";
+import lockIcon from "../../../assets/icons/lockIcon.svg";
 
 import React, { FormEvent, useEffect, useState } from "react";
-import useValidation from "../../hooks/useValidation";
-import validateEmail from "../../hooks/validateMail";
+import useValidation from "../../../hooks/useValidation";
+import { validateEmail } from "../Helpers/validateEmail";
+import { apiCall } from "../Helpers/apiCall";
 
 const Register: React.FC = () => {
   const [invalidPasswords, setInvalidPasswords] = useState<boolean>(false);
   const [formIsValid, setFormIsValid] = useState<boolean>(false);
-
 
   //custom hook for email validation
   const {
@@ -47,14 +47,14 @@ const Register: React.FC = () => {
   const {
     value: enteredPasswordConfirmation,
     isValid: enteredPasswordConfirmationIsValid,
-    hasError: passwordCofnirmationInputHasError,
+    hasError: passwordConfirmationInputHasError,
     valueChangeHandler: passwordConfirmationChangeHandler,
     inputBlurHandler: passwordCOnfirmationBlurHandler,
     reset: resetPasswordConfirmationInput,
     isTouched: passwordConfirmationIsTouched,
   } = useValidation((value: string) => value.trim().length >= 8);
 
-  const data = {
+  const credentials = {
     email: enteredMail,
     plainPassword: enteredPassword,
   };
@@ -93,13 +93,17 @@ const Register: React.FC = () => {
   const formSubmitHandler = (e: FormEvent) => {
     e.preventDefault();
     if (!formIsValid) return;
-
-    fetch("http://api.ultimate.systems/public/index.php/api/v1/register", {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+    apiCall(
+      "http://api.ultimate.systems/public/index.php/api/v1/register",
+      credentials,
+      "POST"
+    ).then((data) => {
+      if (data.success) {
+        resetMailInput();
+        resetPasswordInput();
+        resetPasswordConfirmationInput();
+      }
+    });
   };
 
   return (
@@ -113,6 +117,7 @@ const Register: React.FC = () => {
             <StyledInput
               isInvalid={!enteredMailIsValid && mailIsTouched}
               required
+              value={enteredMail}
               type="email"
               placeholder="piotrkowalski@gmail.com"
               onChange={(e: React.FormEvent<HTMLInputElement>) =>
@@ -120,9 +125,6 @@ const Register: React.FC = () => {
               }
               onBlur={() => {
                 mailBlurHandler(true);
-              }}
-              onFocus={() => {
-                resetMailInput();
               }}
             />
             {mailInputHasError && (
@@ -137,6 +139,7 @@ const Register: React.FC = () => {
             <StyledInput
               isInvalid={!enteredPasswordIsValid && passwordIsTouched}
               required
+              value={enteredPassword}
               type="password"
               minLength={8}
               placeholder="Minimum 8 znaków"
@@ -146,10 +149,7 @@ const Register: React.FC = () => {
               onBlur={() => {
                 passwordBlurHandler(true);
               }}
-              onFocus={() => {
-                resetPasswordInput();
-              }}
-            />{" "}
+            />
             {passwordInputHasError && (
               <ErrorParagraph>*zbyt mała ilość znaków</ErrorParagraph>
             )}
@@ -168,6 +168,7 @@ const Register: React.FC = () => {
               }
               type="password"
               minLength={8}
+              value={enteredPasswordConfirmation}
               placeholder="Minimum 8 znaków"
               required
               onChange={(e: React.FormEvent<HTMLInputElement>) => {
@@ -176,11 +177,8 @@ const Register: React.FC = () => {
               onBlur={() => {
                 passwordCOnfirmationBlurHandler(true);
               }}
-              onFocus={() => {
-                resetPasswordConfirmationInput();
-              }}
             />
-            {passwordCofnirmationInputHasError && (
+            {passwordConfirmationInputHasError && (
               <ErrorParagraph>*zbyt mała ilość znaków</ErrorParagraph>
             )}
             {invalidPasswords && <ErrorParagraph>*różne hasła</ErrorParagraph>}
@@ -189,6 +187,7 @@ const Register: React.FC = () => {
 
         <StyledButton disabled={!formIsValid}>Zarejestruj się</StyledButton>
       </StyledForm>
+      Masz juz konto?
     </StyledWrapper>
   );
 };
