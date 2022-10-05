@@ -15,6 +15,7 @@ import React, { FormEvent, useEffect, useState } from "react";
 import useValidation from "../../../hooks/useValidation";
 import { validateEmail } from "../Helpers/validateEmail";
 import { apiCall } from "../Helpers/apiCall";
+import { Link } from "react-router-dom";
 
 const Register: React.FC = () => {
   const [invalidPasswords, setInvalidPasswords] = useState<boolean>(false);
@@ -187,7 +188,7 @@ const Register: React.FC = () => {
 
         <StyledButton disabled={!formIsValid}>Zarejestruj się</StyledButton>
       </StyledForm>
-      Masz juz konto?
+      <Link className="link" to="/login">Masz już konto?</Link>
     </StyledWrapper>
   );
 };

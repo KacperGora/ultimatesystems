@@ -51,7 +51,7 @@ const Pagination: React.FC<PaginationProps> = ({
       ) : null}
       <PaginationButton>...</PaginationButton>
       <PaginationButton onClick={goToLastPage} disabled={atLastPage()}>
-        {getLastPage()}
+        {getLastPage() || 0}
       </PaginationButton>
       <PaginationPageInput onSubmit={formSubmitHandler}>
         <label>Wyników na stronie</label>

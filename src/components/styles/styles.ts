@@ -23,6 +23,18 @@ export const StyledWrapper = styled.div`
     width: 394px;
     height: 89px;
   }
+  .link {
+    font-size: 16px;
+    text-decoration: none;
+    cursor: pointer;
+    text-align: center;
+    color: #999;
+    transition: all 300ms;
+    &:hover {
+      color: black;
+      scale: 1.1;
+    }
+  }
 `;
 export const StyledForm = styled.form`
   padding: 10px;

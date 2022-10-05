@@ -17,10 +17,11 @@ import { setRefreshToken } from "../../../store/querySlice";
 import { useAppDispatch } from "../../../store/hook";
 import { validateEmail } from "../Helpers/validateEmail";
 import { apiCall } from "../Helpers/apiCall";
+import { useNavigate } from "react-router-dom";
 const Login: React.FC = () => {
   const dispatch = useAppDispatch();
   const [formIsValid, setFormIsValid] = useState(false);
-
+  const navigate = useNavigate();
   const {
     value: enteredMail,
     isValid: enteredMailIsValid,
@@ -69,6 +70,7 @@ const Login: React.FC = () => {
       document.cookie = `${data.token}`;
       localStorage.setItem("refreshToken", data.refresh_token);
       dispatch(setRefreshToken(data.refresh_token));
+      navigate("/list");
     });
   };
 
