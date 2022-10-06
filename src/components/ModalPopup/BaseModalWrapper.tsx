@@ -1,8 +1,10 @@
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../../../../store/hook";
-import { toggleModal } from "../../../../store/modalSlice";
+import { useAppSelector, useAppDispatch } from "../../store/hook";
+import { toggleModal } from "../../store/modalSlice";
+import { CloseSign, DesktopCloseButton, DesktopModalContainer } from "../../styles/AuthStyles/ModalStyles/ModalPopupStyle";
+
 import Modal from "./Modal";
-import { CloseSign, DesktopCloseButton, DesktopModalContainer } from "./ModalPopupStyle";
+
 
 interface BaseModalWrapperProps {
   header?: string;

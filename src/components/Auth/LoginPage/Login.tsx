@@ -9,7 +9,7 @@ import {
   StyledInputContainer,
   StyledLabel,
   StyledWrapper,
-} from "../../styles/styles";
+} from "../../../styles/AuthStyles/styles";
 import emailIcon from "../../../assets/icons/mailIcon.svg";
 import lockIcon from "../../../assets/icons/lockIcon.svg";
 import useValidation from "../../../hooks/useValidation";
@@ -73,56 +73,57 @@ const Login: React.FC = () => {
       navigate("/list");
     });
   };
+  const formInputsCfg = [
+    {
+      id: "mail",
+      label: "Email",
+      type: "email",
+      placeHolder: "piotrkowalski@gmail.com",
+      changeHandler: mailChangeHandler,
+      blurHandler: mailBlurHandler,
+      error: mailInputHasError,
+      errorMsg: "*niepoprawny adres e-mail",
+      icon: emailIcon,
+      isInvalid: !enteredMailIsValid && mailIsTouched,
+    },
+
+    {
+      id: "",
+      label: "Hasło",
+      type: "password",
+      changeHandler: passwordChangeHandler,
+      blurHandler: passwordBlurHandler,
+      placeHolder: "Hasło",
+      error: passwordInputHasError,
+      errorMsg: "zbyt mała ilość znaków",
+      icon: lockIcon,
+      isInvalid: !enteredPasswordIsValid && passwordIsTouched,
+    },
+  ];
 
   return (
     <StyledWrapper>
       <h2>Logowanie</h2>
       <StyledForm onSubmit={formSubmitHandler}>
-        <StyledInputContainer>
-          <StyledLabel>Email</StyledLabel>
-          <InputWithIcon>
-            <img alt="input icon" className="icon" src={emailIcon} />
-            <StyledInput
-              isInvalid={!enteredMailIsValid && mailIsTouched}
-              required
-              type="email"
-              value={enteredMail}
-              placeholder="piotrkowalski@gmail.com"
-              onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                mailChangeHandler(e)
-              }
-              onBlur={() => {
-                mailBlurHandler(true);
-              }}
-            />
-            {mailInputHasError && (
-              <ErrorParagraph>*niepoprawny adres e-mail</ErrorParagraph>
-            )}
-          </InputWithIcon>
-        </StyledInputContainer>
-        <StyledInputContainer>
-          <StyledLabel>Hasło</StyledLabel>
-          <InputWithIcon>
-            <img alt="input icon" className="icon" src={lockIcon} />
-            <StyledInput
-              isInvalid={!enteredPasswordIsValid && passwordIsTouched}
-              required
-              value={enteredPassword}
-              type="password"
-              minLength={8}
-              placeholder="Minimum 8 znaków"
-              onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                passwordChangeHandler(e);
-              }}
-              onBlur={() => {
-                passwordBlurHandler(true);
-              }}
-            />
-            {passwordInputHasError && (
-              <ErrorParagraph>*zbyt mała ilość znaków</ErrorParagraph>
-            )}
-          </InputWithIcon>
-        </StyledInputContainer>
+        {formInputsCfg.map((el) => (
+          <StyledInputContainer key={el.label}>
+            <StyledLabel>{el.label}</StyledLabel>
+            <InputWithIcon>
+              <img alt="input icon" className="icon" src={el.icon} />
+              <StyledInput
+                isInvalid={el.isInvalid}
+                required
+                type={el.type}
+                placeholder={el.placeHolder}
+                onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                  el.changeHandler(e)
+                }
+                onBlur={() => el.blurHandler(true)}
+              />
+              {el.error && <ErrorParagraph>{el.errorMsg}</ErrorParagraph>}
+            </InputWithIcon>
+          </StyledInputContainer>
+        ))}
         <StyledButton
           title={formIsValid ? "Zaloguj" : "Uzupełnij poprawnie dane"}
           disabled={!formIsValid}

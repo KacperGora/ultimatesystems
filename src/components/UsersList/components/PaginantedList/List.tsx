@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import axios from "axios";
 import { useAppSelector } from "../../../../store/hook";
-import Pagination from "./Pagination";
+
 import SingleUser from "./SingleUser";
 import SortTools from "./SortTools";
-import { Container, ContainerFlex } from "../../UserList.styles";
-
+import {
+  Container,
+  ContainerFlex,
+} from "../../../../styles/UsersListStyles/UserList.styles";
+import PaginationComponent from "./Pagination";
 const fetcher = async (url: string) => {
   const res = await axios.get(url);
   return res.data;
@@ -69,13 +72,12 @@ const List: React.FC = () => {
         {data?.data.map((user: any) => (
           <SingleUser user={user} key={user.id} />
         ))}
-
-        <Pagination
-          page={page}
+        <PaginationComponent
           setPage={setPage}
+          page={page}
           limit={limit}
-          setLimit={setLimit}
           total={data?.total}
+          setLimit={setLimit}
         />
       </Container>
     </ContainerFlex>

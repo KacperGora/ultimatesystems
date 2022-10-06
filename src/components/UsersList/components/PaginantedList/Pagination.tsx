@@ -1,75 +1,67 @@
-import React, { useState } from "react";
+import Pagination from "@mui/material/Pagination";
+
+import { styled } from "@mui/material/styles";
 import {
-  PaginationButton,
-  PaginationContainer,
-  PaginationPageInput,
-} from "../../UserList.styles";
 
-type PaginationProps = {
+  StyledFlexBox,
+  StyledPageSelection,
+} from "../../../../styles/UsersListStyles/UserList.styles";
+interface Props {
   page: number;
-  setPage: any;
-  total?: number;
+  total: number;
   limit: number;
-  setLimit: any;
-};
+  setPage: Function;
+  setLimit: Function;
+}
+const CustomizedPagination = styled(Pagination)`
+  margin-top: 24px;
+  * {
+    font-size: 18px;
+  }
+  button {
+    font-weight: 600;
+  }
 
-const Pagination: React.FC<PaginationProps> = ({
+  .MuiButtonBase-root {
+    font-size: 18px;
+    color: black;
+  }
+  .Mui-selected {
+    background-color: black !important;
+    color: white;
+  }
+`;
+const PaginationComponent = ({
   page,
-  setPage,
   total,
   limit,
+  setPage,
   setLimit,
-}) => {
-  const [number, setNumber] = useState<string | number>(5);
-  
-  const goToFirstPage = () => setPage(1);
-  const goToLastPage = () => setPage(getLastPage());
-  const incrementPage = () => page < getLastPage() && setPage(page + 1);
-  const decrementPage = () => page > 1 && setPage(page - 1);
-  const atLastPage = () => page === getLastPage();
-  const getLastPage = () => Math.ceil(total! / limit);
-
-  const formSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLimit(number);
-  };
-  const active = page === 1;
+}: Props) => {
+  const getLastPage = () => Math.ceil(total! / limit - 1);
   return (
-    <PaginationContainer>
-      <PaginationButton active={active} onClick={goToFirstPage}>
-        1
-      </PaginationButton>
-      {page > 2 ? (
-        <PaginationButton onClick={decrementPage}>{page - 1}</PaginationButton>
-      ) : (
-        ""
-      )}
-      {page !== 1 ? <PaginationButton active>{page}</PaginationButton> : null}
+    <StyledFlexBox>
+      <CustomizedPagination
+        onChange={(e, page) => setPage(page + 1)}
+        shape="circular"
+        count={getLastPage() || 0}
+        page={page - 1}
+        hideNextButton
+        hidePrevButton
+        siblingCount={0}
+      />
 
-      {page < getLastPage() ? (
-        <PaginationButton onClick={incrementPage}>{page + 1}</PaginationButton>
-      ) : null}
-      <PaginationButton>...</PaginationButton>
-      <PaginationButton onClick={goToLastPage} disabled={atLastPage()}>
-        {getLastPage() || 0}
-      </PaginationButton>
-      <PaginationPageInput onSubmit={formSubmitHandler}>
-        <label>Wyników na stronie</label>
-        <div>
-          <input
-            min={1}
-            max={total}
-            type="number"
-            step={1}
-            onChange={(e: React.FormEvent<HTMLInputElement>) =>
-              setNumber(e.currentTarget.value)
-            }
-          />
-          <button type="submit">OK</button>
-        </div>
-      </PaginationPageInput>
-    </PaginationContainer>
+      <StyledPageSelection
+        onChange={(e: React.FormEvent<HTMLSelectElement>) =>
+          setLimit(e.currentTarget.value)
+        }
+      >
+        <option value={1}>1</option>
+        <option value={5}>5</option>
+        <option value={10}>10</option>
+      </StyledPageSelection>
+    </StyledFlexBox>
   );
 };
 
-export default Pagination;
+export default PaginationComponent;

@@ -4,16 +4,19 @@ import pl from "date-fns/locale/pl";
 import "react-datepicker/dist/react-datepicker.css";
 import styled from "styled-components";
 
-import useValidation from "../../../../hooks/useValidation";
+import useValidation from "../../hooks/useValidation";
 
 import Checkbox from "./Checkbox";
 import SuccessModal from "./SuccessModal";
-import { validateEmail } from "../../../Auth/Helpers/validateEmail";
-import { ErrorParagraph } from "../../../styles/styles";
+import { validateEmail } from "../Auth/Helpers/validateEmail";
+import { ErrorParagraph } from "../../styles/AuthStyles/styles";
 import { formatPhoneNumber } from "./Helpers/phoneNumberFormat";
 import { phoneNumberRegexTest } from "./Helpers/phoneNumberRegexTest";
-import { useAppDispatch } from "../../../../store/hook";
-import { toggleModal } from "../../../../store/modalSlice";
+import { useAppDispatch } from "../../store/hook";
+import { toggleModal } from "../../store/modalSlice";
+
+import apiCallFn from "../../hooks/apiCallFn";
+import { refreshTokenFn } from "./Helpers/RefreshToken";
 import {
   HeaderParagraph,
   InputTel,
@@ -23,13 +26,15 @@ import {
   StyledDiv,
   StyledForm,
   StyledInputContainer,
-} from "./ModalPopupStyle";
+} from "../../styles/AuthStyles/ModalStyles/ModalPopupStyle";
 
 registerLocale("pl", pl);
 const DivHelper = styled.div`
   display: flex;
   gap: 48px;
 `;
+type ReactInputType = React.FormEvent<HTMLInputElement>;
+
 const EditInfoModal: React.FC = () => {
   const dispatch = useAppDispatch();
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -86,84 +91,106 @@ const EditInfoModal: React.FC = () => {
     marketingAgreements,
     sellingRegulation,
   };
+
+  const formPreValid: boolean =
+    enteredPhoneNumberIsValid &&
+    enteredMailIsValid &&
+    enteredNameIsValid &&
+    enteredLastNameIsValid &&
+    privacyPolicy &&
+    sellingRegulation;
+
   useEffect(() => {
-    if (
-      enteredPhoneNumberIsValid &&
-      enteredMailIsValid &&
-      enteredNameIsValid &&
-      enteredLastNameIsValid &&
-      privacyPolicy &&
-      sellingRegulation
-    )
-      setFormIsValid(true);
-    else setFormIsValid(false);
+    formPreValid && setFormIsValid(true);
   }, [
     enteredLastNameIsValid,
     enteredMailIsValid,
     enteredNameIsValid,
     enteredPhoneNumberIsValid,
+    formPreValid,
     privacyPolicy,
     sellingRegulation,
   ]);
 
-  const refreshFn = () => {
-    fetch(
-      "http://api.ultimate.systems/public/index.php/api/v1/auth/token/refresh",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(refresh),
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        localStorage.clear();
-        localStorage.setItem("refreshToken", data.refresh_token);
-        document.cookie = data.token;
-      });
-  };
+  !document.cookie && refreshTokenFn();
 
-  const patchFn = (data: {}) => {
-    
-    fetch("http://api.ultimate.systems/public/index.php/api/v1/auth/user", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${document.cookie}`,
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        if (data === "Proccess completed!") {
-          setStatus(true);
-        }
-        if (data.message === "Expired JWT Token") {
-          refreshFn();
-        }
-      });
-  };
-  const refresh = {
-    refresh_token: localStorage.getItem("refreshToken"),
+  const patchUserInfoFn = () => {
+    apiCallFn(
+      "http://api.ultimate.systems/public/index.php/api/v1/auth/user",
+      data,
+      "PATCH"
+    ).then(async (data) => {
+      data === "Proccess completed!" && setStatus(true);
+      if (data.message === "Expired JWT Token") {
+        await refreshTokenFn();
+        patchUserInfoFn();
+      }
+    });
   };
 
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
     if (!sellingRegulation) {
       setSalesError(true);
-    } else setSalesError(false);
+    } else {
+      setSalesError(false);
+    }
     if (!privacyPolicy) {
       setPrivacyError(true);
     } else {
       setPrivacyError(false);
     }
-  
 
-    formIsValid && patchFn(data);
+    formIsValid && patchUserInfoFn();
   };
+
+  const errorText = "* pole obowiązkowe";
+  const formInputsCfg = [
+    {
+      id: "mail",
+      label: "*E-mail",
+      type: "email",
+      changeHandler: mailChangeHandler,
+      blurHandler: mailBlurHandler,
+      error: mailInputHasError,
+    },
+    {
+      id: "name",
+      label: "*Imię",
+      type: "text",
+      changeHandler: nameChangeHandler,
+      blurHandler: nameBlurHandler,
+      error: nameInputHasError,
+    },
+    {
+      id: "surname",
+      label: "*Nazwisko",
+      type: "text",
+      changeHandler: lastNameChangeHandler,
+      blurHandler: lastNameBlurHandler,
+      error: lastNameInputHasError,
+    },
+  ];
+
+  const checkboxCfg = [
+    {
+      id: "policy",
+      label: "* Polityka prywatności",
+      status: setPrivacyPolicy,
+      error: privacyError,
+    },
+    {
+      id: "marketing",
+      label: "Zgody marketingowe",
+      status: setMarketingAgreements,
+    },
+    {
+      id: "sales",
+      label: "* Regulamin sprzedaży",
+      status: setSellingRegulation,
+      error: salesError,
+    },
+  ];
 
   return (
     <>
@@ -171,61 +198,22 @@ const EditInfoModal: React.FC = () => {
         <>
           <HeaderParagraph>Edycja danych</HeaderParagraph>
           <StyledForm onSubmit={submitHandler}>
-            <StyledInputContainer>
-              <Label htmlFor="mail">*E-mail</Label>
-              <input
-                value={enteredMail}
-                id="mail"
-                type="email"
-                onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                  mailChangeHandler(e)
-                }
-                onBlur={() => {
-                  mailBlurHandler(true);
-                }}
-                required
-              />
 
-              {mailInputHasError && (
-                <ErrorParagraph modal>* pole obowiązkowe</ErrorParagraph>
-              )}
-            </StyledInputContainer>
-            <StyledInputContainer>
-              <Label htmlFor="name">*Imię</Label>
-              <input
-                value={enteredName}
-                onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                  nameChangeHandler(e)
-                }
-                onBlur={() => {
-                  nameBlurHandler(true);
-                }}
-                type="text"
-                id="name"
-                required
-              />
-              {nameInputHasError && (
-                <ErrorParagraph modal>* pole obowiązkowe</ErrorParagraph>
-              )}
-            </StyledInputContainer>
-            <StyledInputContainer>
-              <Label htmlFor="surname">*Nazwisko</Label>
-              <input
-                onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                  lastNameChangeHandler(e)
-                }
-                onBlur={() => {
-                  lastNameBlurHandler(true);
-                }}
-                type="text"
-                id="surname"
-                required
-                value={enteredLastName}
-              />
-              {lastNameInputHasError && (
-                <ErrorParagraph modal>* pole obowiązkowe</ErrorParagraph>
-              )}
-            </StyledInputContainer>
+            
+            {formInputsCfg.map((el) => (
+              <StyledInputContainer key={el.id}>
+                <Label htmlFor={el.id}>*E-mail</Label>
+                <input
+                  id={el.id}
+                  type={el.type}
+                  onChange={(e) => el.changeHandler(e)}
+                  onBlur={() => el.blurHandler(true)}
+                  required
+                />
+                {el.error && <ErrorParagraph>{errorText}</ErrorParagraph>}
+              </StyledInputContainer>
+            ))}
+
             <StyledInputContainer>
               <Label htmlFor="birthdate">*data urodzenia</Label>
               <DatePicker
@@ -247,17 +235,14 @@ const EditInfoModal: React.FC = () => {
                   type="text"
                   defaultValue="+48"
                   maxLength={3}
-                  onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                  onChange={(e: ReactInputType) =>
                     setPrefix(e.currentTarget.value)
                   }
                 />
-
                 <input
                   required
                   style={{ width: "100%" }}
-                  onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                    phoneNumberChangeHandler(e)
-                  }
+                  onChange={(e: ReactInputType) => phoneNumberChangeHandler(e)}
                   onBlur={() => phoneNumberBlurHandler(true)}
                   type="tel"
                   id="tel"
@@ -266,36 +251,21 @@ const EditInfoModal: React.FC = () => {
                 />
               </InputTelBox>
               {enteredPhoneNumberHasError && (
-                <ErrorParagraph modal>* pole obowiązkowe</ErrorParagraph>
+                <ErrorParagraph>{errorText}</ErrorParagraph>
               )}
             </StyledInputContainer>
             <StyledInputContainer />
-            <StyledInputContainer>
-              <Checkbox
-                id="policy"
-                status={(e: any) => setPrivacyPolicy(e)}
-                label="* Polityka prywatności"
-              />
-              {privacyError && (
-                <ErrorParagraph modal>* pole obowiązkowe</ErrorParagraph>
-              )}
-            </StyledInputContainer>
 
-            <Checkbox
-              id="marketing"
-              status={(e: any) => setMarketingAgreements(e)}
-              label="Zgody marketingowe"
-            />
-            <StyledInputContainer>
-              <Checkbox
-                id="sales"
-                status={(e: any) => setSellingRegulation(e)}
-                label="* Regulamin sprzedaży"
-              />
-              {salesError && (
-                <ErrorParagraph modal>* pole obowiązkowe</ErrorParagraph>
-              )}
-            </StyledInputContainer>
+            {checkboxCfg.map((box) => (
+              <StyledInputContainer>
+                <Checkbox
+                  id={box.id}
+                  status={(e: any) => box.status(e)}
+                  label={box.label}
+                />
+                {box.error && <ErrorParagraph>{errorText}</ErrorParagraph>}
+              </StyledInputContainer>
+            ))}
           </StyledForm>
           <StyledDiv>
             <p>*Pola obowiązkowe</p>

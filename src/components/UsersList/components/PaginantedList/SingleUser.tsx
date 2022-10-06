@@ -4,7 +4,7 @@ import {
   DetailParagraphList,
   DivFlexContainerList,
   UserImgList,
-} from "../../UserList.styles";
+} from "../../../../styles/UsersListStyles/UserList.styles";
 
 type Props = {
   user: {
@@ -14,11 +14,16 @@ type Props = {
     birth_date: Date;
   };
 };
+
 const SingleUser: React.FC<Props> = ({ user }) => {
+  const formatFirstLetter = (value: string) => {
+    return value.charAt(0).toUpperCase();
+  };
+
   const userName: string = user.name ? user.name : "Robert";
-  const userLastName = user.surname ? user.name : "Kowalski";
-  const firstLetter = userName.charAt(0).toUpperCase();
-  const firstLetterLastName = userLastName.charAt(0).toUpperCase();
+  const userLastName = user.surname ? user.surname : "Kowalski";
+  const firstLetter = formatFirstLetter(userName);
+  const firstLetterLastName = formatFirstLetter(userLastName);
 
   const formattedDate = new Date(user.birth_date).toLocaleDateString();
 

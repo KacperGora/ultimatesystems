@@ -1,8 +1,10 @@
 import React from "react";
-
-import { toggleModal } from "../../../../store/modalSlice";
-import { useAppDispatch } from "../../../../store/hook";
-import { ModalContainer, SuccessButton } from "./ModalPopupStyle";
+import { useAppDispatch } from "../../store/hook";
+import { toggleModal } from "../../store/modalSlice";
+import {
+  ModalContainer,
+  SuccessButton,
+} from "../../styles/AuthStyles/ModalStyles/ModalPopupStyle";
 
 const SuccessModal: React.FC = () => {
   const dispatch = useAppDispatch();

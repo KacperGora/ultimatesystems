@@ -1,8 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { useAppDispatch } from "../../../../store/hook";
-import { toggleModal } from "../../../../store/modalSlice";
-import { Overlay } from "./ModalPopupStyle";
+import { useAppDispatch } from "../../store/hook";
+import { toggleModal } from "../../store/modalSlice";
+import { Overlay } from "../../styles/AuthStyles/ModalStyles/ModalPopupStyle";
+
+
 interface ModalProps {
   children?: React.ReactNode;
 }

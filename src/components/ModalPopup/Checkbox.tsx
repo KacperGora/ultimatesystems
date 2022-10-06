@@ -4,7 +4,7 @@ import {
   CheckBoxLabel,
   DivFlexContainer,
   DivHelper,
-} from "./ModalPopupStyle";
+} from "../../styles/AuthStyles/ModalStyles/ModalPopupStyle";
 
 type Props = {
   label: string;

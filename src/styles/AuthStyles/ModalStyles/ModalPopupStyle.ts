@@ -23,8 +23,9 @@ export const DesktopModalContainer = styled(ModalContainer)`
   border-radius: 7px;
   box-shadow: 0 0 32px rgba(0, 0, 0, 0.25);
   padding: 40px;
-  width: 1200px;
+  min-width: 30vw;
   font-size: 25px;
+
 `;
 export const Header = styled.p`
   color: black;
@@ -65,11 +66,10 @@ export const CloseSign = styled.div`
   }
 `;
 
-const CLOSE_BUTTON_SIZE = 30;
 export const CloseButton = styled.div`
   position: absolute;
-  width: ${CLOSE_BUTTON_SIZE}px;
-  height: ${CLOSE_BUTTON_SIZE}px;
+  width: 30px;
+  height: 30px;
   background-color: white;
   border: 1px solid #555;
   border-radius: 50%;
@@ -83,15 +83,14 @@ export const CloseButton = styled.div`
   }
 `;
 export const DesktopCloseButton = styled(CloseButton)`
-  top: -${CLOSE_BUTTON_SIZE / 2}px;
-  left: calc(100% - ${CLOSE_BUTTON_SIZE / 2}px);
+  top: -15px;
+  left: calc(100% - 15px);
 `;
-////MODAL FORM ////
 
 export const StyledForm = styled.form`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  width: 1125px;
+  max-width: 1125px;
   gap: 50px;
 
   input {
@@ -123,7 +122,6 @@ export const Label = styled.label`
   font-size: 16px;
 `;
 
-export const CheckBoxInput = styled.input``;
 export const StyledDiv = styled.div`
   display: flex;
   justify-content: space-between;
@@ -185,18 +183,17 @@ export const Overlay = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  z-index: 3;
 `;
 
 export const CheckBoxLabel = styled.label`
-  font-size: 16px;
+  font-size: 14px;
 `;
 export const CheckboxInput = styled.input`
   -webkit-appearance: none;
   appearance: none;
   cursor: pointer;
   margin: 0;
-  font: inherit;
   color: black;
   width: 24px;
   height: 24px;
@@ -231,5 +228,5 @@ export const DivHelper = styled.div`
 export const DivFlexContainer = styled.div`
   display: flex;
   gap: 16px;
-  align-items: "center";
+  align-items: center;
 `;

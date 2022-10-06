@@ -1,16 +1,18 @@
 import React from "react";
 import styled from "styled-components";
 import { useAppDispatch } from "../../store/hook";
-import { StyledButton } from "../styles/styles";
 
-import BaseModalWrapper from "./components/ModalPopup/BaseModalWrapper";
-import EditInfoModal from "./components/ModalPopup/EditInfoModal";
-import { UserListMainWrapper } from "./UserList.styles";
+import {
+  StyledEditButton,
+  UserListMainWrapper,
+} from "../../styles/UsersListStyles/UserList.styles";
 
 import { toggleModal } from "../../store/modalSlice";
 import List from "./components/PaginantedList/List";
 
 import HeaderListTools from "./components/PaginantedList/HeaderListTools";
+import BaseModalWrapper from "../ModalPopup/BaseModalWrapper";
+import EditInfoModal from "../ModalPopup/EditInfoModal";
 
 const DivHelper = styled.div`
   display: flex;
@@ -24,9 +26,9 @@ const UsersList: React.FC = () => {
     <UserListMainWrapper>
       <HeaderListTools />
       <DivHelper>
-        <StyledButton onClick={() => dispatch(toggleModal())} fw small edit>
+        <StyledEditButton onClick={() => dispatch(toggleModal())}>
           Edytuj swoje konto
-        </StyledButton>
+        </StyledEditButton>
         <BaseModalWrapper header="Edycja danych" content={<EditInfoModal />} />
       </DivHelper>
       <List />

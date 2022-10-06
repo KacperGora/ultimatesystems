@@ -7,7 +7,7 @@ import {
   StyledInputContainer,
   StyledLabel,
   StyledWrapper,
-} from "../../styles/styles";
+} from "../../../styles/AuthStyles/styles";
 import emailIcon from "../../../assets/icons/mailIcon.svg";
 import lockIcon from "../../../assets/icons/lockIcon.svg";
 
@@ -21,7 +21,6 @@ const Register: React.FC = () => {
   const [invalidPasswords, setInvalidPasswords] = useState<boolean>(false);
   const [formIsValid, setFormIsValid] = useState<boolean>(false);
 
-  //custom hook for email validation
   const {
     value: enteredMail,
     isValid: enteredMailIsValid,
@@ -33,8 +32,6 @@ const Register: React.FC = () => {
   } = useValidation(
     (value: string) => value.trim() !== "" && validateEmail(value)
   );
-
-  // custom hook for password validation
   const {
     value: enteredPassword,
     isValid: enteredPasswordIsValid,
@@ -106,89 +103,81 @@ const Register: React.FC = () => {
       }
     });
   };
+  const formInputsCfg = [
+    {
+      id: "mail",
+      label: "Email",
+      type: "email",
+      placeHolder: "piotrkowalski@gmail.com",
+      changeHandler: mailChangeHandler,
+      blurHandler: mailBlurHandler,
+      error: mailInputHasError,
+      errorMsg: "*niepoprawny adres e-mail",
+      icon: emailIcon,
+      isInvalid: !enteredMailIsValid && mailIsTouched,
+    },
 
+    {
+      id: "password",
+      label: "Hasło",
+      type: "password",
+      changeHandler: passwordChangeHandler,
+      blurHandler: passwordBlurHandler,
+      placeHolder: "Hasło",
+      error: passwordInputHasError,
+      errorMsg: "zbyt mała ilość znaków",
+      icon: lockIcon,
+      isInvalid: !enteredPasswordIsValid && passwordIsTouched,
+      differentPassword: invalidPasswords,
+      differentPasswordMessage: <ErrorParagraph>*różne hasła</ErrorParagraph>,
+    },
+    {
+      id: "confirmPassword",
+      label: "Powtórz hasło",
+      type: "password",
+      changeHandler: passwordConfirmationChangeHandler,
+      blurHandler: passwordCOnfirmationBlurHandler,
+      placeHolder: "Powtórz hasło",
+      error: passwordConfirmationInputHasError,
+      errorMsg: "zbyt mała ilość znaków",
+      icon: lockIcon,
+      isInvalid:
+        !enteredPasswordConfirmationIsValid && passwordConfirmationIsTouched,
+      differentPassword: invalidPasswords,
+      differentPasswordMessage: <ErrorParagraph>*różne hasła</ErrorParagraph>,
+    },
+  ];
   return (
     <StyledWrapper>
       <h2>Zaczynamy!</h2>
       <StyledForm onSubmit={formSubmitHandler}>
-        <StyledInputContainer>
-          <StyledLabel>Email</StyledLabel>
-          <InputWithIcon>
-            <img alt="input icon" className="icon" src={emailIcon} />
-            <StyledInput
-              isInvalid={!enteredMailIsValid && mailIsTouched}
-              required
-              value={enteredMail}
-              type="email"
-              placeholder="piotrkowalski@gmail.com"
-              onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                mailChangeHandler(e)
-              }
-              onBlur={() => {
-                mailBlurHandler(true);
-              }}
-            />
-            {mailInputHasError && (
-              <ErrorParagraph>*niepoprawny adres e-mail</ErrorParagraph>
-            )}
-          </InputWithIcon>
-        </StyledInputContainer>
-        <StyledInputContainer>
-          <StyledLabel>Hasło</StyledLabel>
-          <InputWithIcon>
-            <img alt="input icon" className="icon" src={lockIcon} />
-            <StyledInput
-              isInvalid={!enteredPasswordIsValid && passwordIsTouched}
-              required
-              value={enteredPassword}
-              type="password"
-              minLength={8}
-              placeholder="Minimum 8 znaków"
-              onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                passwordChangeHandler(e);
-              }}
-              onBlur={() => {
-                passwordBlurHandler(true);
-              }}
-            />
-            {passwordInputHasError && (
-              <ErrorParagraph>*zbyt mała ilość znaków</ErrorParagraph>
-            )}
-            {invalidPasswords && <ErrorParagraph>*różne hasła</ErrorParagraph>}
-          </InputWithIcon>
-        </StyledInputContainer>
-
-        <StyledInputContainer>
-          <StyledLabel>Powtórz hasło</StyledLabel>
-          <InputWithIcon>
-            <img alt="styled icon" className="icon" src={lockIcon} />
-            <StyledInput
-              isInvalid={
-                !enteredPasswordConfirmationIsValid &&
-                passwordConfirmationIsTouched
-              }
-              type="password"
-              minLength={8}
-              value={enteredPasswordConfirmation}
-              placeholder="Minimum 8 znaków"
-              required
-              onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                passwordConfirmationChangeHandler(e);
-              }}
-              onBlur={() => {
-                passwordCOnfirmationBlurHandler(true);
-              }}
-            />
-            {passwordConfirmationInputHasError && (
-              <ErrorParagraph>*zbyt mała ilość znaków</ErrorParagraph>
-            )}
-            {invalidPasswords && <ErrorParagraph>*różne hasła</ErrorParagraph>}
-          </InputWithIcon>
-        </StyledInputContainer>
-
+        {formInputsCfg.map((el) => (
+          <StyledInputContainer key={el.id}>
+            <StyledLabel>{el.label}</StyledLabel>
+            <InputWithIcon>
+              <img alt="input icon" className="icon" src={el.icon} />
+              <StyledInput
+                isInvalid={el.isInvalid}
+                required
+                type={el.type}
+                placeholder={el.placeHolder}
+                onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                  el.changeHandler(e)
+                }
+                onBlur={() => {
+                  el.blurHandler(true);
+                }}
+              />
+              {el.error && <ErrorParagraph>{el.errorMsg}</ErrorParagraph>}
+              {el.differentPassword && el.differentPasswordMessage}
+            </InputWithIcon>
+          </StyledInputContainer>
+        ))}
         <StyledButton disabled={!formIsValid}>Zarejestruj się</StyledButton>
       </StyledForm>
-      <Link className="link" to="/login">Masz już konto?</Link>
+      <Link className="link" to="/login">
+        Masz już konto?
+      </Link>
     </StyledWrapper>
   );
 };
